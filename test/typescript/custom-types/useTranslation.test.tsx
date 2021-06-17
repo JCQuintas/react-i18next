@@ -81,7 +81,16 @@ function withoutContext() {
 
 function contextUsage() {
   const { t } = useTranslation('withContext');
-  return t('animal.type', { context: 'lion' }) === 'Lion';
+  t('animal.type', { context: 'lion' }) === 'Lion';
+  t('type', { context: 'male' }) === 'Man';
+}
+
+function expectErrorOnWrongContextUsage() {
+  const { t } = useTranslation('withContext');
+  // @ts-expect-error
+  t('animal.type', { context: 'car' });
+  // @ts-expect-error
+  t('type', { context: 'car' });
 }
 
 function keyWithMultipleUnderscores() {

@@ -162,23 +162,36 @@ export type TFuncReturn<N, TKeys, TDefaultResult, T = DefaultResources> = N exte
   ? NormalizeReturn<T[N], TKeys>
   : Fallback<TDefaultResult>;
 
+type AllContextsForKey<
+  N extends Namespace,
+  K extends TKeys | TKeys[],
+  TKeys = TFuncKey<N> | TemplateStringsArray extends infer A ? A : never,
+  TFK = TFuncKey<N>
+> = TFK extends KeyWithSeparator<K, infer C> ? C : never;
+
+type OptionsWithContext<Context extends any = any> = Omit<TOptions, 'context'> & {
+  context?: Context;
+};
+
 export interface TFunction<N extends Namespace = DefaultNamespace> {
   <
     TKeys extends TFuncKey<N> | TemplateStringsArray extends infer A ? A : never,
-    TDefaultResult extends TFunctionResult = string,
-    TInterpolationMap extends object = StringMap
+    Key extends TKeys | TKeys[],
+    Options extends OptionsWithContext<AllContextsForKey<N, Key>> | string,
+    TDefaultResult extends TFunctionResult = string
   >(
-    key: TKeys | TKeys[],
-    options?: TOptions<TInterpolationMap> | string,
+    key: Key,
+    options?: Options,
   ): TFuncReturn<N, TKeys, TDefaultResult>;
   <
     TKeys extends TFuncKey<N> | TemplateStringsArray extends infer A ? A : never,
-    TDefaultResult extends TFunctionResult = string,
-    TInterpolationMap extends object = StringMap
+    Key extends TKeys | TKeys[],
+    Options extends OptionsWithContext<AllContextsForKey<N, Key>> | string,
+    TDefaultResult extends TFunctionResult = string
   >(
-    key: TKeys | TKeys[],
+    key: Key,
     defaultValue?: string,
-    options?: TOptions<TInterpolationMap> | string,
+    options?: Options,
   ): TFuncReturn<N, TKeys, TDefaultResult>;
 }
 
